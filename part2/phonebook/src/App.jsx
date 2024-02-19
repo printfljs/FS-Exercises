@@ -26,9 +26,15 @@ const PersonForm = (props)=>{
   )
 }
 
-const Persons = ({personsToShow})=>{
+const Persons = ({personsToShow,deletePerson})=>{
+  const personList=personsToShow.map(person=>(
+    <div key={person.id}>
+    <span key={person.name}>{person.name} {person.number}</span>
+    <button onClick={()=>deletePerson(person)}>delete</button>
+    </div>
+  ))
   return (
-    <div>{personsToShow.map(person=>(<p key={person.name}>{person.name} {person.number}</p>))}</div>
+    <div>{personList}</div>
   )
 }
 
@@ -46,6 +52,23 @@ const App = () => {
   },[])
 
   const personsToShow= filterValue===''?persons:persons.filter(person=>person.name.toLowerCase().includes(filterValue.toLowerCase()))
+
+  const deletePerson = (person)=>{
+    console.log(person)
+    event.preventDefault(); 
+    const result = window.confirm(`Are you sure you want to delete ${person.name} ?`);
+    if (result === false) {
+      return
+    }
+    phonebook.deletePerson(person.id).then(response=>{
+      console.log(response)
+      phonebook.getAll().then(response=>{
+        setPersons(response)
+      })
+    }).catch(error=>{
+      console.log(error)
+    })
+  }
 
   const addPhone = () => {
     if(newName === ''){
@@ -93,7 +116,7 @@ const App = () => {
       <h3>Add a new</h3>
       <PersonForm addPhone={addPhone} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
       <h3>Numbers</h3>
-      <Persons personsToShow={personsToShow}/>
+      <Persons personsToShow={personsToShow} deletePerson={deletePerson}/>
     </div>
   )
 }
