@@ -80,7 +80,16 @@ const App = () => {
       return
     }
     if(persons.some(person=>person.name === newName)){
-      alert(`${newName} is already added to phonebook`)
+      const result = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`);
+      if (result) {
+        const person=persons.find(person=>person.name===newName)
+        const newPerson={...person, number: newNumber}
+        phonebook.update(person.id, newPerson).then(response=>{
+          setPersons(persons.map(p=>p.id!==person.id?p:response))
+        }).catch(error=>{
+          console.log(error)
+        })
+      }
       return
     }
     const param={
