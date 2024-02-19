@@ -1,6 +1,6 @@
 import { useState,useEffect } from 'react'
 import phonebook from './services/phonebook'  
-import Notification from './components/notification'
+import {SuccessNotify, ErrorNotify} from './components/notification'
 
 const Filter = ({filterValue, handleFilterChange})=>{
   return (
@@ -46,6 +46,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setFilterValue] = useState('')
   const [successMsg, setSuccessMsg] = useState(null)
+  const [errorMsg, setErrorMsg] = useState(null)
 
   useEffect(()=>{
     phonebook.getAll().then(response=>{
@@ -97,6 +98,14 @@ const App = () => {
           }, 5000)
         }).catch(error=>{
           console.log(error)
+          if(error.response.status===404){
+            setErrorMsg(
+              `Information of '${person.name}' has already been removed from server`
+            )
+            setTimeout(() => {
+              setErrorMsg(null)
+            }, 5000)
+          }
         })
       }
       return
@@ -135,7 +144,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={successMsg} />
+      <SuccessNotify message={successMsg} />
+      <ErrorNotify message={errorMsg} />
       <Filter filterValue={filterValue} handleFilterChange={handleFilterChange}/>
       <h3>Add a new</h3>
       <PersonForm addPhone={addPhone} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
