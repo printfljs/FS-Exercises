@@ -33,40 +33,48 @@ function App() {
         <div>
           {countriesToShow.map(country => (
             <div key={country.cca2}>
-              <p>{country.name.common}</p>
+              <span>{country.name.common}</span>&nbsp;
+              <button onClick={() => showCountryDetail(country)}>show</button>
             </div>
           ))}
         </div>
       );
     } else {
-      const countryName = countriesToShow[0].name.common;
-      country.getDetail(countryName)
-        .then(response => {
-          setDisplayContent(
-            <div>
-              <h1>{response.name.common}</h1>
-              <p>capital {response.capital[0]}</p>
-              <p>area {response.area}</p>
-              <h2>languages</h2>
-              <ul>
-                {Object.values(response.languages).map((language, i) => (
-                  <li key={i}>{language}</li>
-                ))}
-              </ul>
-              <img
-                src={response.flags.png}
-                alt={`flag of ${response.name.common}`}
-                width="100"
-              />
-            </div>
-          );
-        })
-        .catch(error => {
-          console.log(error);
-          setDisplayContent(<div>Error fetching country details</div>);
-        });
+      displayDetail(countriesToShow[0].name.common)
     }
   }, [searchName, countries]);
+
+  const displayDetail = countryName => {
+    country.getDetail(countryName)
+      .then(response => {
+        setDisplayContent(
+          <div>
+            <h1>{response.name.common}</h1>
+            <p>capital {response.capital[0]}</p>
+            <p>area {response.area}</p>
+            <h2>languages</h2>
+            <ul>
+              {Object.values(response.languages).map((language, i) => (
+                <li key={i}>{language}</li>
+              ))}
+            </ul>
+            <img
+              src={response.flags.png}
+              alt={`flag of ${response.name.common}`}
+              width="100"
+            />
+          </div>
+        );
+      })
+      .catch(error => {
+        console.log(error);
+        setDisplayContent(<div>Error fetching country details</div>);
+      });
+  }
+
+  const showCountryDetail = countryName => {
+    displayDetail(countryName.name.common)
+  }
 
   const handleNameChange = e => {
     setSearchName(e.target.value);
