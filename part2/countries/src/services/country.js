@@ -11,4 +11,9 @@ const getDetail = (name)=>{
     return response.then(response=>response.data)
 }
 
-export default {getList,getDetail}
+const getWeather = (name,APPID)=>{
+    const response = axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${name}&APPID=${APPID}`)
+    return response.then(response=>response.data)
+}
+
+export default {getList,getDetail,getWeather}

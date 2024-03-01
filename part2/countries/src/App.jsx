@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import country from './services/country';
 
+const api_key = import.meta.env.VITE_SOME_KEY
+
 function App() {
   const [searchName, setSearchName] = useState('');
   const [countries, setCountries] = useState([]);
@@ -47,24 +49,35 @@ function App() {
   const displayDetail = countryName => {
     country.getDetail(countryName)
       .then(response => {
-        setDisplayContent(
-          <div>
-            <h1>{response.name.common}</h1>
-            <p>capital {response.capital[0]}</p>
-            <p>area {response.area}</p>
-            <h2>languages</h2>
-            <ul>
-              {Object.values(response.languages).map((language, i) => (
-                <li key={i}>{language}</li>
-              ))}
-            </ul>
-            <img
-              src={response.flags.png}
-              alt={`flag of ${response.name.common}`}
-              width="100"
-            />
-          </div>
-        );
+        country.getWeather(response.capital[0], api_key).then(weather => {
+          let temperature=weather.main.temp
+          let weatherIcon=weather.weather[0].icon
+          let windSpeed=weather.wind.speed
+          setDisplayContent(
+            <div>
+              <h1>{response.name.common}</h1>
+              <p>capital {response.capital[0]}</p>
+              <p>area {response.area}</p>
+              <h2>languages</h2>
+              <ul>
+                {Object.values(response.languages).map((language, i) => (
+                  <li key={i}>{language}</li>
+                ))}
+              </ul>
+              <img
+                src={response.flags.png}
+                alt={`flag of ${response.name.common}`}
+                width="100"
+              />
+              <h2>Weather in {response.capital[0]}</h2>
+              <div>temperature: {temperature}</div>
+              <img
+                src={'https://openweathermap.org/img/wn/' + weatherIcon + '@2x.png'}
+                alt="weather icon"></img>
+              <div>wind: {windSpeed} m/s</div>
+            </div>
+          );
+        })
       })
       .catch(error => {
         console.log(error);
